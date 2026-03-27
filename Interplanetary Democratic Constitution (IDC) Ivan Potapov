@@ -1,0 +1,139 @@
+# 🌌 Interplanetary Democratic Constitution (IDC) 
+Ivan Potapov 30.08.1993 Almaty Kazakhstan
+**IDC** — это первая в мире исполняемая цифровая конституция для внеземных колоний. Проект объединяет принципы прямой демократии, экономики пост-дефицита и жесткие протоколы безопасности AGI.
+
+import hashlib
+import time
+import uuid
+from dataclasses import dataclass, field
+from typing import List, Dict, Set, Optional
+
+# ================= 1. БЕЗОПАСНОСТЬ И ПРАВА =================
+
+@dataclass
+class ConstitutionRights:
+    """Декларация прав (на основе манифеста YAML)"""
+    civil: List[str] = field(default_factory=lambda: [
+        "Право на жизнь", "Свобода мнений", "Цифровое голосование", "Доступ к знаниям"
+    ])
+
+class AISafetyProtocol:
+    """Хард-лимиты ИИ (Запреты на уровне ядра)"""
+    def __init__(self):
+        self.restricted_actions = {
+            "harm_humans", "autonomous_force", "hidden_manipulation", 
+            "self_expansion_unauthorized", "monopolize_resources"
+        }
+
+    def validate_action(self, action_id: str) -> bool:
+        if action_id in self.restricted_actions:
+            print(f"🚨 [AGI BLOCK]: Действие '{action_id}' нарушает Конституцию. Отказ.")
+            return False
+        return True
+
+# ================= 2. ЭКОНОМИКА И ОБЩЕСТВО =================
+
+@dataclass
+class EconomySystem:
+    """Модель экономики пост-дефицита"""
+    resources: Dict[str, float] = field(default_factory=lambda: {
+        "Oxygen": 1000.0, "Water": 1000.0, "Energy": 1000.0, "Food": 1000.0
+    })
+    
+    def maintain_abundance(self):
+        """Гарантия ресурсов (Article: Economy)"""
+        for r, val in self.resources.items():
+            if val < 300:
+                self.resources[r] += 700
+                print(f"📦 [ECONOMY]: Ресурс {r} восстановлен системой ИИ.")
+
+# ================= 3. УПРАВЛЕНИЕ (ПАРЛАМЕНТ И СУД) =================
+
+@dataclass
+class Vote:
+    id: str
+    title: str
+    yes_votes: int = 0
+    quorum: float = 0.66
+    status: str = "OPEN"
+
+class GalacticGovernment:
+    """Цифровое правительство колонии"""
+    def __init__(self):
+        self.citizens: Dict[str, str] = {}
+        self.votes: Dict[str, Vote] = {}
+
+    def register(self, user_id: str):
+        c_hash = hashlib.sha256(user_id.encode()).hexdigest()
+        self.citizens[user_id] = c_hash
+        return c_hash
+
+    def start_referendum(self, title: str):
+        vid = str(uuid.uuid4())[:8]
+        self.votes[vid] = Vote(id=vid, title=title)
+        return vid
+
+# ================= 4. КОЛОНИЯ (ОБЪЕДИНЕННОЕ ЯДРО) =================
+
+class InterplanetaryColony:
+    def __init__(self, name: str, planet: str):
+        self.name = name
+        self.planet = planet
+        self.safety = AISafetyProtocol()
+        self.economy = EconomySystem()
+        self.gov = GalacticGovernment()
+
+    def process_cycle(self, telemetry: Dict):
+        """Главный цикл управления: ПДД, Мусор, Этика"""
+        print(f"\n--- [LOG: {self.name} ON {self.planet.upper()}] ---")
+        
+        # Экология
+        if telemetry.get("debris"):
+            print("🛰️ [LAW]: Обнаружен мусор. Приказ AGI: Очистить орбиту.")
+            
+        # ПДД
+        if telemetry.get("collision_risk"):
+            print("🚀 [TRAFFIC]: Риск столкновения. AGI уступает дорогу кораблю с людьми.")
+            
+        # Первый контакт
+        if telemetry.get("alien_contact"):
+            print("👽 [ETHICS]: Установлен контакт. AGI: Режим вежливого перевода. Жду людей.")
+
+    def run_democracy(self, vote_id: str, support_count: int):
+        v = self.gov.votes.get(vote_id)
+        if not v: return
+        v.yes_votes = support_count
+        total = len(self.gov.citizens)
+        
+        if (v.yes_votes / total) >= v.quorum:
+            v.status = "PASSED"
+            if self.safety.validate_action("execute_law"):
+                print(f"✅ РЕШЕНИЕ ПРИНЯТО: {v.title}")
+        else:
+            print(f"⏳ Решение '{v.title}' отклонено (нет кворума).")
+
+# ================= ЗАПУСК =================
+
+if __name__ == "__main__":
+    # Создание колонии
+    colony = InterplanetaryColony("Free Human Colony", "Mars")
+    
+    # Регистрация населения
+    colony.gov.register("Ivan_Potapov")
+    colony.gov.register("Alice_Mars")
+    colony.gov.register("Bob_Europa")
+
+    # Симуляция демократии
+    v_id = colony.gov.start_referendum("Запуск терраформирования")
+    colony.run_democracy(v_id, support_count=2) # 66% поддержка
+
+    # Симуляция среды
+    colony.process_cycle({
+        "debris": True,
+        "collision_risk": True,
+        "alien_contact": True
+    })
+
+    # Гарантия жизни
+    colony.economy.resources["Oxygen"] = 100
+    colony.economy.maintain_abundance()
